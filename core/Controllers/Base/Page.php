@@ -1,6 +1,8 @@
 <?php
 namespace Core\Controllers\Base;
 
+use Core\Controllers\Base\Query;
+
 final class Page
 {
     public string   $ID;
@@ -74,60 +76,10 @@ final class Page
             "to_ping" => '',
         ], $this->page_args));
 
-        $this->query = $wp_query;
-        $this->updateWpQuery();
-        // dump($wp_query);
+        $this->query = new Query($this->ID, $this->wp_post);
+
         @status_header(200);
         wp_cache_add($this->ID, $this->wp_post, 'posts');
-    }
-
-    public function updateWpQuery(): void
-    {
-        global $wp, $wp_query;
-        // Update the main query
-        $wp_query->current_post = $this->wp_post->ID;
-        $wp_query->found_posts = 1;
-        $wp_query->is_page = true;
-        $wp_query->is_singular = true;
-        $wp_query->is_single = false;
-        $wp_query->is_attachment = false;
-        $wp_query->is_archive = false;
-        $wp_query->is_category = false;
-        $wp_query->is_tag = false;
-        $wp_query->is_tax = false;
-        $wp_query->is_author = false;
-        $wp_query->is_date = false;
-        $wp_query->is_year = false;
-        $wp_query->is_month = false;
-        $wp_query->is_day = false;
-        $wp_query->is_time = false;
-        $wp_query->is_search = false;
-        $wp_query->is_feed = false;
-        $wp_query->is_comment_feed = false;
-        $wp_query->is_trackback = false;
-        $wp_query->is_home = false;
-        $wp_query->is_embed = false;
-        $wp_query->is_404 = false;
-        $wp_query->is_paged = false;
-        $wp_query->is_admin = false;
-        $wp_query->is_preview = false;
-        $wp_query->is_robots = false;
-        $wp_query->is_posts_page = false;
-        $wp_query->is_post_type_archive = false;
-        $wp_query->max_num_pages = 1;
-        $wp_query->post = $this->wp_post;
-        $wp_query->posts = [$this->wp_post];
-        $wp_query->post_count = 1;
-        $wp_query->queried_object = $this->wp_post;
-        $wp_query->queried_object_id = $this->wp_post->ID;
-        $wp_query->query_vars['error'] = '';
-        unset($wp_query->query['error']);
-
-        $GLOBALS['wp_query'] = $wp_query;
-
-        $wp->query = [];
-        $wp->register_globals();
-
     }
     
     public function customBodyClass( array $classes ): array
