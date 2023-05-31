@@ -20,8 +20,6 @@ final class Router
         add_action("init", [$this, "registerRoutes"]);
         add_filter('request', [$this, "filterRequest"]);
         add_action('wp_logout', [$this, "onLogoutRedirect"]);
-        
-        flush_rewrite_rules();
     }
     
     public static function add(string $endpointName, array $endpointProperties = []): void
@@ -85,6 +83,7 @@ final class Router
             foreach(self::$endpoints as $routeKey => $routeValue){
                 add_rewrite_endpoint( $routeKey, EP_ALL, true );
             }
+            flush_rewrite_rules();
         }
     }
 
