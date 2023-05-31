@@ -1,7 +1,7 @@
 <?php
 namespace Core\Controllers\Base;
 
-use Core\Controllers\Base\{Page};
+use Core\Controllers\Base\{Page, Router, Filters};
 
 // TODO: Proceed writing template loader
 final class Views
@@ -30,11 +30,16 @@ final class Views
         global $wp_query;
         // TODO: FIX COMPONENT LOADING | SOME THEMES NOT WORKING PROPERLY
         if($wp_query->query['is_ams_page']){
+            $needLogin = Router::$endpoints[$wp_query->query['main_page']]['need_login'];
             // init virtual page
             $page = new Page();
             // get page template
             $pageFile = $this->templates . "/{$wp_query->query["current_page"]}/content.php";
-            if(file_exists($pageFile)){
+            // if page require login
+            if($needLogin && !is_user_logged_in()){
+                wp_redirect( Filters::onLogoutRedirectURL(), 302 );
+                exit;
+            } else if(file_exists($pageFile)){
                 // set page template
                 $template = $pageFile;
             }
