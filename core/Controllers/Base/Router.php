@@ -1,11 +1,13 @@
 <?php
 namespace Core\Controllers\Base;
 
-use Core\Controllers\Base\{Filters};
+use Core\Controllers\Base\Filters\{MainFilters};
+use Core\Traits\Singleton;
 
 final class Router
 {
-    
+    use Singleton;
+
     public static array $endpoints = [
         "dashboard" => [
             "need_login" => true
@@ -15,13 +17,13 @@ final class Router
         ]
     ];
 
-    public function __construct()
-    {   
+    private function __construct()
+    {
         add_action("init", [$this, "registerRoutes"]);
         add_filter('request', [$this, "filterRequest"]);
         add_action('wp_logout', [$this, "onLogoutRedirect"]);
     }
-    
+
     public static function add(string $endpointName, array $endpointProperties = []): void
     {
         self::$endpoints[$endpointName] = $endpointProperties;
@@ -50,7 +52,7 @@ final class Router
             $mid = $pages;
             // formatted query array
             $query = self::getQueryArray($_SERVER['QUERY_STRING']);
-            
+
             if(!empty(array_key_first($vars)) && array_key_exists(array_key_first($vars), self::$endpoints)){
                 // main page name | parent page for next current
                 $vars["main_page"] = array_key_first($vars);

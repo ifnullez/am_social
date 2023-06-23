@@ -1,7 +1,7 @@
 <?php
 namespace Core\Controllers\Base;
 
-use Core\Controllers\Base\Query;
+use Core\Controllers\Base\AMSQuery;
 
 final class Page
 {
@@ -12,10 +12,10 @@ final class Page
 
     private $wp_post;
     private $query;
-    
+
     public array    $page_args;
     public array    $query_args;
-    
+
     public function __construct(array $page_args = [], array $query_args = [])
     {
         global $wp_query;
@@ -24,7 +24,7 @@ final class Page
         $this->page_args                =   $page_args;
         $this->post_type                =   "page";
         $this->content_enabled          =   true;
-        
+
         // filters and actions
         add_filter( "posts_clauses_request", [$this, "skipMainQuery"], 10, 2 );
         add_filter( "body_class", [$this, "customBodyClass"] );
@@ -44,7 +44,7 @@ final class Page
     }
 
     public function create(): void
-    {   
+    {
         global $wp_query;
         // TODO: Make it flexibile
         $this->wp_post = new \WP_Post((object) array_merge([
@@ -76,29 +76,29 @@ final class Page
             "to_ping" => '',
         ], $this->page_args));
 
-        $this->query = new Query($this->ID, $this->wp_post);
+        $this->query = new AMSQuery($this->ID, $this->wp_post);
 
         @status_header(200);
         wp_cache_add($this->ID, $this->wp_post, 'posts');
     }
-    
+
     public function customBodyClass( array $classes ): array
     {
         if(get_query_var('is_ams_page')){
             $currentPage = get_query_var('current_page');
             // add virtual page name to body class
        	    $new_class = is_page() && get_the_ID() == $this->ID ? "page-{$currentPage}" : null;
-            
+
             // if redirected to the login page
             // if(is_page() && get_the_ID() == $this->page_id && self::$endpoints[$currentPage]["need_login"] && !is_user_logged_in()){
             //     $new_class = "page-login";
             // }
-           	
+
             if ( $new_class ) {
           		$classes[] = $new_class;
            	}
         }
     	return $classes;
     }
-    
+
 }

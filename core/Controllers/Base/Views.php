@@ -1,22 +1,26 @@
 <?php
 namespace Core\Controllers\Base;
 
-use Core\Controllers\Base\{Page, Router, Filters};
+use Core\Controllers\Base\{Page, Router};
+use Core\Controllers\Base\Filters\MainFilters;
+use Core\Traits\Singleton;
 
 // TODO: Proceed writing template loader
 final class Views
 {
+    use Singleton;
+
     public string $templates;
     public Page $page;
-    
-    public function __construct()
+
+    private function __construct()
     {
         // load page to rewrite wp_query | Pages are virtual
         $this->templates = $this->setTemplatesPath();
         // filters and actions
         add_filter( "template_include", [ $this, "render"] );
     }
-    
+
     public function setTemplatesPath(): string
     {
         if(file_exists(AMS_ACTIVE_THEME_DIR . "/ams")){
@@ -24,7 +28,7 @@ final class Views
         }
         return AMS_PLUGIN_DIR . "/Views/public";
     }
-    
+
     public function render(string $template): string
     {
         global $wp_query;
@@ -32,12 +36,12 @@ final class Views
         if($wp_query->query['is_ams_page']){
             $needLogin = Router::$endpoints[$wp_query->query['main_page']]['need_login'];
             // init virtual page
-            $page = new Page();
+            $this->page = new Page();
             // get page template
             $pageFile = $this->templates . "/{$wp_query->query["current_page"]}/content.php";
             // if page require login
             if($needLogin && !is_user_logged_in()){
-                wp_redirect( Filters::onLogoutRedirectURL(), 302 );
+                wp_redirect( MainFilters::onLogoutRedirectURL(), 302 );
                 exit;
             } else if(file_exists($pageFile)){
                 // set page template
@@ -47,26 +51,3 @@ final class Views
         return $template;
     }
 }
-
-/**
-public function loadRouterPage( $template ): string
-{
-    $currentPage = self::currentVirtualPage();
-
-    if ( $currentPage ) {
-        if(file_exists("{$this->templatesPath}/public/{$currentPage}.php")){
-                // fill query for virtual page
-                if(!empty(self::$endpoints[$currentPage]["need_login"]) && self::$endpoints[$currentPage]["need_login"] && !is_user_logged_in() || $currentPage == "login"){
-                    $this->createPage("Login", "{$this->templatesPath}/public/login.php", true);
-                } else {
-                    $this->createPage($currentPage, "{$this->templatesPath}/public/{$currentPage}.php", true);
-                }
-                // assign needed file as page template
-                $template = "{$this->templatesPath}/public/{$currentPage}.php";
-        } else {
-            throw new \Exception("Template for page {$currentPage} not found!");
-        }
-    }
-    return $template;
-}
-**/

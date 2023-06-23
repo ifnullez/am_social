@@ -1,12 +1,12 @@
 <?php
 namespace Core\Controllers\Base;
 
-class Query
+class AMSQuery
 {
     public function __construct(string $ID, $page)
     {
         global $wp_query, $wp;
-        
+
         $wp_query->queried_object_id = $ID;
         $wp_query->current_post = $ID;
         $wp_query->posts = [$page];
