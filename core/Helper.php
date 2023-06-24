@@ -29,4 +29,9 @@ final class Helper
     {
         return !array_diff_key(array_flip($keys), $arr);
     }
+    // TODO: proceed with building template loader method
+    public static function amsLoadTemplatePart($string $slug, string $name = "", array $args = []): void
+    {
+
+    }
 }

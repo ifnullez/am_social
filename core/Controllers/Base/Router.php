@@ -1,7 +1,7 @@
 <?php
 namespace Core\Controllers\Base;
 
-use Core\Controllers\Base\Filters\{MainFilters};
+use Core\Controllers\Base\Filters\AuthFilters;
 use Core\Traits\Singleton;
 
 final class Router
@@ -13,7 +13,16 @@ final class Router
             "need_login" => true
         ],
         "login" => [
-            "need_login" => false
+            "need_login" => false,
+            "auth_page" => true
+        ],
+        "register" => [
+            "need_login" => false,
+            "auth_page" => true
+        ],
+        "forgot-password" => [
+            "need_login" => false,
+            "auth_page" => true
         ]
     ];
 
@@ -22,6 +31,7 @@ final class Router
         add_action("init", [$this, "registerRoutes"]);
         add_filter('request', [$this, "filterRequest"]);
         add_action('wp_logout', [$this, "onLogoutRedirect"]);
+        add_action('login_redirect', [$this, "onLoginRedirect"]);
     }
 
     public static function add(string $endpointName, array $endpointProperties = []): void
@@ -91,7 +101,12 @@ final class Router
 
     public function onLogoutRedirect(): void
     {
-        wp_redirect( Filters::onLogoutRedirectURL(), 302 );
+        wp_redirect( AuthFilters::onLogoutRedirectURL(), 302 );
+        exit;
+    }
+    public function onLoginRedirect(): void
+    {
+        wp_redirect( AuthFilters::onLoginRedirectURL(), 302 );
         exit;
     }
 }

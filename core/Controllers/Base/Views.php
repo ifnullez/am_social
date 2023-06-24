@@ -2,7 +2,7 @@
 namespace Core\Controllers\Base;
 
 use Core\Controllers\Base\{Page, Router};
-use Core\Controllers\Base\Filters\MainFilters;
+use Core\Controllers\Base\Filters\AuthFilters;
 use Core\Traits\Singleton;
 
 // TODO: Proceed writing template loader
@@ -20,7 +20,7 @@ final class Views
         // filters and actions
         add_filter( "template_include", [ $this, "render"] );
     }
-
+    // TODO: make this method adaptive to partly placed templates
     public function setTemplatesPath(): string
     {
         if(file_exists(AMS_ACTIVE_THEME_DIR . "/ams")){
@@ -35,13 +35,18 @@ final class Views
         // TODO: FIX COMPONENT LOADING | SOME THEMES NOT WORKING PROPERLY
         if($wp_query->query['is_ams_page']){
             $needLogin = Router::$endpoints[$wp_query->query['main_page']]['need_login'];
+            $isAuthPage = Router::$endpoints[$wp_query->query['main_page']]['auth_page'];
             // init virtual page
             $this->page = new Page();
+            // if is auth page add sub-folder part to properly place template parts
+            if($isAuthPage){
+                $this->templates .= "/auth";
+            }
             // get page template
             $pageFile = $this->templates . "/{$wp_query->query["current_page"]}/content.php";
             // if page require login
             if($needLogin && !is_user_logged_in()){
-                wp_redirect( MainFilters::onLogoutRedirectURL(), 302 );
+                wp_redirect( AuthFilters::onLogoutRedirectURL(), 302 );
                 exit;
             } else if(file_exists($pageFile)){
                 // set page template
