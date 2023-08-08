@@ -1,11 +1,12 @@
 <?php
+
 namespace Core\Traits;
 
 trait Singleton
 {
     private static $instance;
 
-    public static function getInstance()
+    public static function getInstance(): ?self
     {
 
         if (self::$instance === null) {
@@ -15,9 +16,13 @@ trait Singleton
         return self::$instance;
     }
 
-    private function __construct(){}
+    private function __construct()
+    {
+    }
 
-    private function __clone(){}
+    private function __clone()
+    {
+    }
 
     public function __wakeup()
     {

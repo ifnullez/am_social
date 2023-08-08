@@ -1,0 +1,20 @@
+{
+  "name": "am_social",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "node ./esbuild.mjs",
+    "watch": "node ./esbuild.mjs --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "esbuild": "0.17.19"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "esbuild-sass-plugin": "^2.9.0",
+    "postcss": "^8.4.23"
+  }
+}

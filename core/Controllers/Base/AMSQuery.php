@@ -1,5 +1,8 @@
 <?php
+
 namespace Core\Controllers\Base;
+
+use WP_Query;
 
 class AMSQuery
 {
@@ -52,7 +55,7 @@ class AMSQuery
 
     public function __set($property, $value)
     {
-        if(property_exists($this, $property)){
+        if (property_exists($this, $property)) {
             $this->$property = $value;
         }
     }
