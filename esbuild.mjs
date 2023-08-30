@@ -25,7 +25,9 @@ const onRebuild = {
 const args = {
   entryPoints: [
     { out: "styles/main.min", in: "./assets/src/styles/main.scss" },
+    { out: "styles/admin.min", in: "./assets/src/styles/admin.scss" },
     { out: "scripts/main.min", in: "./assets/src/scripts/main.js" },
+    { out: "scripts/admin.min", in: "./assets/src/scripts/admin.js" },
   ],
   outdir: "./assets/dist",
   bundle: true,

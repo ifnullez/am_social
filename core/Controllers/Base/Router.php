@@ -55,9 +55,7 @@ final class Router
     public function filterRequest(array $vars): array
     {
         // main array of pages
-        $vars["is_ams_page"] = false;
         if (in_array(array_key_first($vars), array_keys(self::$endpoints))) {
-            $vars["is_ams_page"] = true;
             $pages = explode('/', $vars[array_key_first($vars)]);
             // copy var to prevent removing parameters from main var
             $mid = $pages;

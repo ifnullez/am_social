@@ -2,25 +2,28 @@
 
 namespace Core\Controllers\Base;
 
-use Core\Controllers\Base\AMSQuery;
+use Core\Controllers\Base\{AMSQuery, Router};
 use Core\Helper;
+use Core\Traits\Singleton;
 
 final class Page
 {
+    use Singleton;
     public string   $ID;
     public string   $post_type;
     public bool     $content_enabled;
 
-
     private $wp_post;
     private $query;
+    private Router $router;
 
     public array    $page_args;
     public array    $query_args;
 
-    public function __construct(array $page_args = [], array $query_args = [])
+    private function __construct(array $page_args = [], array $query_args = [])
     {
         global $wp_query;
+        $this->router                   =   Router::getInstance();
         $this->ID                       =   hexdec(uniqid());
         $this->query_args               =   $wp_query->query;
         $this->page_args                =   $page_args;
@@ -35,8 +38,8 @@ final class Page
 
     public function skipMainQuery($pieces, $wp_query): ?array
     {
-        if (!empty(self::$endpoints)) {
-            foreach (self::$endpoints as $routeKey => $routeValue) {
+        if (!empty($this->router::$endpoints)) {
+            foreach ($this->router::$endpoints as $routeKey => $routeValue) {
                 if (isset($wp_query->query[$routeKey]) && $wp_query->is_main_query()) {
                     $pieces['where'] = ' AND ID = 0';
                 }
@@ -86,8 +89,9 @@ final class Page
 
     public function customBodyClass(array $classes): array
     {
-        if (get_query_var('is_ams_page')) {
-            $currentPage = get_query_var('current_page');
+        $currentPage = get_query_var("current_page");
+        $mainPage = get_query_var("main_page");
+        if (in_array($mainPage, array_keys($this->router::$endpoints))) {
 
             // add virtual page name to body class
             $new_class = is_page() && get_the_ID() == $this->ID ? "page-{$currentPage}" : null;
