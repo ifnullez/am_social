@@ -1,20 +1,22 @@
 {
   "name": "am_social",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "Transform WordPress to the social network",
+  "source": [
+    "assets/src/scripts/main.js",
+    "assets/src/scripts/admin.js",
+    "assets/src/styles/main.scss",
+    "assets/src/styles/admin.scss"
+  ],
   "scripts": {
-    "build": "node ./esbuild.mjs",
-    "watch": "node ./esbuild.mjs --watch"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "esbuild": "0.17.19"
+    "watch": "parcel watch --dist-dir ./assets/dist",
+    "build": "parcel build --dist-dir ./assets/dist"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.14",
-    "esbuild-sass-plugin": "^2.9.0",
-    "postcss": "^8.4.23"
-  }
+    "@parcel/transformer-sass": "latest",
+    "parcel": "latest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
