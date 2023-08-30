@@ -1,0 +1,82 @@
+.profile-avatar-picker {
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0, 0.7);
+    display: flex;
+    & label[for="profile_avatar"] {
+        position: absolute;
+        width: 85%;
+        height: 75%;
+        border: 2px dashed #ccc;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+        color: #ccc;
+        border-radius: .3rem;
+        &.success {
+            color: green;
+        }
+        & input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            &::file-selector-button {
+                display: none;
+            }
+        }
+    }
+    &.hidden {
+        display: none;
+    }
+    &--modal {
+        position: relative;
+        background-color: #fff;
+        border-radius: .3rem;
+        padding: 10px 15px;
+        min-width: 285px;
+        min-height: 185px;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-content: center;
+        &--close {
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            background-color: #fff;
+            border-radius: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            z-index: 2;
+        }
+    }
+}
+tr.user-profile-picture {
+    td {
+        img {
+            max-width: 96px;
+            max-height: 96px;
+            object-fit: cover;
+        }
+    }
+}

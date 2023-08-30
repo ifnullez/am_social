@@ -1,24 +1,29 @@
 <?php
+
 namespace Core\Controllers\Base;
 
-use Core\Controllers\Base\AMSQuery;
+use Core\Controllers\Base\{AMSQuery, Router};
+use Core\Helper;
+use Core\Traits\Singleton;
 
 final class Page
 {
+    use Singleton;
     public string   $ID;
     public string   $post_type;
     public bool     $content_enabled;
 
-
     private $wp_post;
     private $query;
+    private Router $router;
 
     public array    $page_args;
     public array    $query_args;
 
-    public function __construct(array $page_args = [], array $query_args = [])
+    private function __construct(array $page_args = [], array $query_args = [])
     {
         global $wp_query;
+        $this->router                   =   Router::getInstance();
         $this->ID                       =   hexdec(uniqid());
         $this->query_args               =   $wp_query->query;
         $this->page_args                =   $page_args;
@@ -26,16 +31,16 @@ final class Page
         $this->content_enabled          =   true;
 
         // filters and actions
-        add_filter( "posts_clauses_request", [$this, "skipMainQuery"], 10, 2 );
-        add_filter( "body_class", [$this, "customBodyClass"] );
+        add_filter("posts_clauses_request", [$this, "skipMainQuery"], 10, 2);
+        add_filter("body_class", [$this, "customBodyClass"]);
         $this->create();
     }
 
-    public function skipMainQuery( $pieces, $wp_query ):?array
+    public function skipMainQuery($pieces, $wp_query): ?array
     {
-        if(!empty(self::$endpoints)){
-            foreach(self::$endpoints as $routeKey => $routeValue){
-                if( isset( $wp_query->query[$routeKey] ) && $wp_query->is_main_query() ){
+        if (!empty($this->router::$endpoints)) {
+            foreach ($this->router::$endpoints as $routeKey => $routeValue) {
+                if (isset($wp_query->query[$routeKey]) && $wp_query->is_main_query()) {
                     $pieces['where'] = ' AND ID = 0';
                 }
             }
@@ -59,7 +64,7 @@ final class Page
             "menu_order" => 0,
             "pinged" => '',
             "ping_status" => 'closed',
-            "post_title" => ucfirst($wp_query->query['current_page']),
+            "post_title" => Helper::slugToTitle($wp_query->query['current_page']),
             "post_name" => sanitize_title($wp_query->query['current_page']),
             "post_content" => "",
             "post_excerpt" => '',
@@ -82,23 +87,19 @@ final class Page
         wp_cache_add($this->ID, $this->wp_post, 'posts');
     }
 
-    public function customBodyClass( array $classes ): array
+    public function customBodyClass(array $classes): array
     {
-        if(get_query_var('is_ams_page')){
-            $currentPage = get_query_var('current_page');
+        $currentPage = get_query_var("current_page");
+        $mainPage = get_query_var("main_page");
+        if (in_array($mainPage, array_keys($this->router::$endpoints))) {
+
             // add virtual page name to body class
-       	    $new_class = is_page() && get_the_ID() == $this->ID ? "page-{$currentPage}" : null;
+            $new_class = is_page() && get_the_ID() == $this->ID ? "page-{$currentPage}" : null;
 
-            // if redirected to the login page
-            // if(is_page() && get_the_ID() == $this->page_id && self::$endpoints[$currentPage]["need_login"] && !is_user_logged_in()){
-            //     $new_class = "page-login";
-            // }
-
-            if ( $new_class ) {
-          		$classes[] = $new_class;
-           	}
+            if ($new_class) {
+                $classes[] = $new_class;
+            }
         }
-    	return $classes;
+        return $classes;
     }
-
 }

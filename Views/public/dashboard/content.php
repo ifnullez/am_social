@@ -4,7 +4,7 @@
         <?php do_action("ams_main_start"); ?>
             <?php echo apply_filters("ams_dashboard_header", null); ?>
             <div class="ams-main-dashboard">
-
+asdasdasdasd
             </div>
         <?php do_action("ams_main_end"); ?>
     <main>

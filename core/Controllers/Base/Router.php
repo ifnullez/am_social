@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Controllers\Base;
 
 use Core\Controllers\Base\Filters\AuthFilters;
@@ -42,8 +43,8 @@ final class Router
     public static function getQueryArray(string $query): array
     {
         $queryArray = [];
-        if(!empty($query)){
-            foreach(explode('&', str_replace(['?', '/'], ['', ''], $query)) as $part) {
+        if (!empty($query)) {
+            foreach (explode('&', str_replace(['?', '/'], ['', ''], $query)) as $part) {
                 $param = explode('=', $part);
                 $queryArray[$param[0]] = $param[1];
             }
@@ -54,16 +55,14 @@ final class Router
     public function filterRequest(array $vars): array
     {
         // main array of pages
-        $vars["is_ams_page"] = false;
-        if(in_array(array_key_first($vars), array_keys(self::$endpoints))){
-            $vars["is_ams_page"] = true;
+        if (in_array(array_key_first($vars), array_keys(self::$endpoints))) {
             $pages = explode('/', $vars[array_key_first($vars)]);
             // copy var to prevent removing parameters from main var
             $mid = $pages;
             // formatted query array
             $query = self::getQueryArray($_SERVER['QUERY_STRING']);
 
-            if(!empty(array_key_first($vars)) && array_key_exists(array_key_first($vars), self::$endpoints)){
+            if (!empty(array_key_first($vars)) && array_key_exists(array_key_first($vars), self::$endpoints)) {
                 // main page name | parent page for next current
                 $vars["main_page"] = array_key_first($vars);
                 // current page is the last page in params
@@ -73,15 +72,15 @@ final class Router
                 // unset($mid[0]);
                 // unset($mid[count($mid)]);
 
-                if(!empty($mid)){
+                if (!empty($mid)) {
                     $vars["mid_pages"] = $mid;
                 }
 
                 // pass filtered query array if query exists
-                if(!empty($query)){
+                if (!empty($query)) {
                     $vars['query'] = $query;
                 }
-                if(!empty(self::$endpoints[array_key_first($vars)]["single_type"])){
+                if (!empty(self::$endpoints[array_key_first($vars)]["single_type"])) {
                     $vars["single_type"] = self::$endpoints[array_key_first($vars)]["single_type"]; // single
                 }
             }
@@ -91,9 +90,9 @@ final class Router
 
     public function registerRoutes(): void
     {
-        if(!empty(self::$endpoints)){
-            foreach(self::$endpoints as $routeKey => $routeValue){
-                add_rewrite_endpoint( $routeKey, EP_ALL, true );
+        if (!empty(self::$endpoints)) {
+            foreach (self::$endpoints as $routeKey => $routeValue) {
+                add_rewrite_endpoint($routeKey, EP_ALL, true);
             }
             flush_rewrite_rules();
         }
@@ -101,12 +100,12 @@ final class Router
 
     public function onLogoutRedirect(): void
     {
-        wp_redirect( AuthFilters::onLogoutRedirectURL(), 302 );
+        wp_redirect(AuthFilters::onLogoutRedirectURL(), 302);
         exit;
     }
     public function onLoginRedirect(): void
     {
-        wp_redirect( AuthFilters::onLoginRedirectURL(), 302 );
+        wp_redirect(AuthFilters::onLoginRedirectURL(), 302);
         exit;
     }
 }
